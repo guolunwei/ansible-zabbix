@@ -1,0 +1,14 @@
+---
+- name: set up zabbix server
+  hosts: zabbix
+  gather_facts: no
+  roles:
+    - common
+    - zabbix
+
+- name: set up zabbix agent
+  hosts: webservers
+  gather_facts: no
+  roles:
+    - common
+    - agent

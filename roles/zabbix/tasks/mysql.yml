@@ -1,0 +1,49 @@
+---
+# configure MySQL for zabbix without root password
+- name: install python3-PyMySQL
+  yum:
+    name: python3-PyMySQL
+
+- name: create zabbix database
+  mysql_db:
+    name: "{{ zabbix_db_name }}"
+    encoding: "{{ charset }}"
+    collation: "{{ collation }}"
+    login_user: "{{ mysql_user }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  register: db_stat
+
+- name: set global variable
+  mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: 1
+    login_user: "{{ mysql_user }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    
+- name: create zabbix user
+  mysql_user:
+    name: "{{ zabbix_db_user }}"
+    password: "{{ zabbix_db_password }}"
+    host: localhost
+    priv: "{{ zabbix_db_user}}.*:ALL"
+    login_user: "{{ mysql_user }}"
+    login_unix_socket: "{{ mysql_socket }}"
+
+- name: import data
+  block:
+    - name: decompress zabbix sql.gz
+      shell:
+        cmd: |
+          cp /usr/share/zabbix-sql-scripts/mysql/server.sql.gz /tmp &&
+          gzip -d /tmp/server.sql
+        creates: /tmp/server.sql
+
+    - name: import zabbix sql data
+      mysql_db:
+        state: import
+        name: "{{ zabbix_db_name }}"
+        target: /tmp/server.sql
+        login_user: "{{ zabbix_db_user}}"
+        login_password: "{{ zabbix_db_password }}"
+        login_unix_socket: "{{ mysql_socket }}"
+  when: db_stat.changed

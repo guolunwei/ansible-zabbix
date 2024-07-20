@@ -1,0 +1,4 @@
+---
+# tasks file for common
+- import_tasks: hostname.yml
+- import_tasks: repo.yml

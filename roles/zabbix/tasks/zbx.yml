@@ -1,0 +1,42 @@
+---
+- name: install soft
+  yum:
+    name:
+      - zabbix-server-mysql
+      - zabbix-web-mysql
+      - zabbix-nginx-conf
+      - zabbix-sql-scripts
+      - zabbix-selinux-policy
+      - zabbix-agent
+      - mysql-server
+      - langpacks-zh_CN
+
+- name: start mysqld
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
+
+- name: config zabbix-server
+  lineinfile:
+    path: /etc/zabbix/zabbix_server.conf
+    regexp: "^DBPassword=.*"
+    line: "DBPassword={{ zabbix_db_password }}"
+  notify: restart zabbix-server
+  tags: zabbix-server
+
+- name: config zabbix-agent
+  lineinfile:
+    path: /etc/zabbix/zabbix_agentd.conf
+    regexp: "^Hostname=.*"
+    line: "Hostname={{ inventory_hostname }}"
+  notify: restart zabbix-agent
+  tags: zabbix-agent
+
+- name: config nginx
+  replace:
+    path: /etc/nginx/conf.d/zabbix.conf
+    regexp: '#'
+    replace: ''
+  notify: restart nginx
+  tags: nginx

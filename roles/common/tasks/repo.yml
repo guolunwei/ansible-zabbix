@@ -1,0 +1,17 @@
+---
+- name: find repo files
+  find:
+    paths: /etc/yum.repos.d/
+    patterns: "*.repo"
+  register: files_to_delete
+
+- name: remove repo file
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ files_to_delete.files }}"
+
+- name: update repo file
+  copy:
+    src: local.repo
+    dest: /etc/yum.repos.d/local.repo

@@ -1,0 +1,13 @@
+---
+# tasks file for roles/agent
+- name: install agent
+  yum:
+    name: zabbix-agent
+
+- name: modify agent conf
+  lineinfile:
+    path: /etc/zabbix/zabbix_agentd.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop: "{{ config_updates }}"
+  notify: restart agent

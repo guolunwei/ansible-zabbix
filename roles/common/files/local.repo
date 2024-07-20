@@ -1,0 +1,14 @@
+[app]
+name=app
+baseurl=ftp://192.168.88.240/dvd/AppStream
+gpgcheck=0
+
+[base]
+name=base
+baseurl=ftp://192.168.88.240/dvd/BaseOS
+gpgcheck=0
+
+[myrpm]
+name=myrpm
+baseurl=ftp://192.168.88.240/rpms
+gpgcheck=0

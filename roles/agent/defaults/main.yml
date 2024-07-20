@@ -1,0 +1,6 @@
+---
+# defaults file for roles/agent
+zabbix_server: 192.168.88.5
+config_updates:
+  - { regexp: '^Hostname=.*', line: "Hostname={{ inventory_hostname }}" }
+  - { regexp: '^Server=.*', line: "Server=127.0.0.1,{{ zabbix_server }}" }

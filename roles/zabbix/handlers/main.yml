@@ -1,0 +1,45 @@
+---
+# handlers file for roles/zabbix
+- name: restart zabbix-server
+  service:
+    name: zabbix-server
+    state: restarted
+    enabled: true
+
+- name: restart zabbix-agent
+  service:
+    name: zabbix-agent
+    state: restarted
+    enabled: true
+
+- name: restart nginx
+  block:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+        enabled: true
+
+    - name: enable php-fpm
+      service:
+        name: php-fpm
+        state: started
+        enabled: true
+
+- name: import data
+  block:
+    - name: decompress zabbix sql.gz
+      shell:
+        cmd: |
+          cp /usr/share/zabbix-sql-scripts/mysql/server.sql.gz /tmp &&
+          gzip -d /tmp/server.sql
+        creates: /tmp/server.sql
+    
+    - name: import zabbix sql data
+      mysql_db:
+        state: import
+        name: "{{ zabbix_db_name }}"
+        target: /tmp/server.sql
+        login_user: "{{ zabbix_db_user}}"
+        login_password: "{{ zabbix_db_password }}"
+        login_unix_socket: "{{ mysql_socket }}"

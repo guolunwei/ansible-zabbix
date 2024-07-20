@@ -1,0 +1,4 @@
+---
+# tasks file for roles/zabbix
+- import_tasks: zbx.yml
+- import_tasks: mysql.yml
