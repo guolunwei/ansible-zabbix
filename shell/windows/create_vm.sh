@@ -5,4 +5,4 @@ do
     ./vm.sh remove "$name"
     ./vm.sh clone "$name"
     ./vm.sh setip "$name" "$ip"
-done < vm.txt
+done < ./vm.txt

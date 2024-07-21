@@ -9,4 +9,4 @@ do
         vmmem set "$name" 2
     fi
     vm setip "$name" "$ip"
-done < vm.txt
+done < ./vm.txt
